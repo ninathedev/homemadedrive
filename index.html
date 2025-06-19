@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <title>idk</title>
+    </head>
+    <body>
+        <h1>idk what to put here</h1>
+        <h2>its just a free google drive but only for viewing</h2>
+        <p>to the people who can edit, you can edit manually <a href="/edit">here</a>.<br>
+        otherwise, you can browse the files in <a href="/files">here</a>.<br>
+        if you have a code you may use it here:</p>
+        <input type="text" placeholder="code" id="code"></input>
+        <button id="send" onclick="send();">send</button>
+        <script>
+            function send() {
+                let code = document.getElementById('code')
+                // make a fetch post request to the server with the code
+                fetch('/code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Asks': code.value
+                    }
+                })
+                // server will send another code. redirect to the page with that code
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code) {
+                        window.location.href = `/${data.code}`;
+                    } else {
+                        alert('Invalid code or error occurred.');
+                    }
+                })
+            }
+        </script>
+    </body>
+</html>
