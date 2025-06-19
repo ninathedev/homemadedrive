@@ -21,14 +21,92 @@
         <button id="renameb">rename</button>
         <script>
             function uploadb() {
-                // h
-                
+                // upload file
+                var password = document.getElementById("password").value;
+                var name = document.getElementById("name").value;
+                var path = document.getElementById("path").value;
+                var files = document.getElementById("file").files;
+
+                if (!password || !name || !path || files.length === 0) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append("password", password);
+                formData.append("name", name);
+                formData.append("path", path);
+                for (var i = 0; i < files.length; i++) {
+                    formData.append("file", files[i]);
+                }
+
+                fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    alert("Upload successful!");
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Upload failed.");
+                });
             }
             function folderb() {
+                // make folder
+                var namef = document.getElementById("namef").value;
+                var pathf = document.getElementById("pathf").value;
 
+                if (!namef || !pathf) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                fetch("/folder", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name: namef, path: pathf })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    alert("Folder created successfully!");
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Failed to create folder.");
+                });
             }
             function renameb() {
+                // rename file or folder
+                var pathr = document.getElementById("pathr").value;
+                var newname = document.getElementById("newname").value;
 
+                if (!pathr || !newname) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                fetch("/rename", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ path: pathr, newName: newname })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    alert("Rename successful!");
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Rename failed.");
+                });
             }
         </script>
     </body>
