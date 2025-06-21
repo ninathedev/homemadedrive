@@ -39,8 +39,10 @@
                 for (var i = 0; i < files.length; i++) {
                     formData.append("file", files[i]);
                 }
+                console.log(formData);
+                // make a fetch post request to the server with the form data
 
-                fetch("/upload", {
+                fetch("/edit/upload", {
                     method: "POST",
                     body: formData
                 })
@@ -64,7 +66,7 @@
                     return;
                 }
 
-                fetch("/folder", {
+                fetch("/edit/folder", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -91,7 +93,7 @@
                     return;
                 }
 
-                fetch("/rename", {
+                fetch("/edit/rename", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

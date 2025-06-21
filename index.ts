@@ -3,11 +3,16 @@ const passwordp = "b94f6403";
 const passwords = "854a9d84";
 
 const express = require('express');
-const serveIndex = require('serve-index')
+const serveIndex = require('serve-index');
+const bodyParser = require('body-parser')
 const app = express();
 const port = 3000;
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json({ type: 'application/json' }))
+
+const jsonParser = bodyParser.json();
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
+app.use(bodyParser.urlencoded({ extended: false, limit: '100000mb' }));   
+app.use(bodyParser.json({limit: '100000mb'}))
+
 //use multer for file uploads
 const fs = require('fs');
 
@@ -37,98 +42,13 @@ app.post('/code', (req: any, res: any) => {
     }
 });
 
-app.post('/edit/upload', (req: any, res: any) => {
-    /*
-    the code from the html file:
-    function uploadb() {
-                // upload file
-                var password = document.getElementById("password").value;
-                var name = document.getElementById("name").value;
-                var path = document.getElementById("path").value;
-                var files = document.getElementById("file").files;
-
-                if (!password || !name || !path || files.length === 0) {
-                    alert("Please fill in all fields.");
-                    return;
-                }
-
-                var formData = new FormData();
-                formData.append("password", password);
-                formData.append("name", name);
-                formData.append("path", path);
-                for (var i = 0; i < files.length; i++) {
-                    formData.append("file", files[i]);
-                }
-
-                fetch("/upload", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    alert("Upload successful!");
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("Upload failed.");
-                });
-            }
-            function folderb() {
-                // make folder
-                var namef = document.getElementById("namef").value;
-                var pathf = document.getElementById("pathf").value;
-
-                if (!namef || !pathf) {
-                    alert("Please fill in all fields.");
-                    return;
-                }
-
-                fetch("/folder", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ name: namef, path: pathf })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    alert("Folder created successfully!");
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("Failed to create folder.");
-                });
-            }
-            function renameb() {
-                // rename file or folder
-                var pathr = document.getElementById("pathr").value;
-                var newname = document.getElementById("newname").value;
-
-                if (!pathr || !newname) {
-                    alert("Please fill in all fields.");
-                    return;
-                }
-
-                fetch("/rename", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ path: pathr, newName: newname })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    alert("Rename successful!");
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("Rename failed.");
-                });
-            }
-    */
+app.post('/edit/upload', urlencodedParser, (req: any, res: any) => {
+    console.log(req.body);
+    if (!req.body || !req.files) {
+        console.log("bro wth");
+        res.status(400).send('Bad Request: Missing fields');
+        return;
+    }
     const passwordInput = req.body.password;
     if (passwordInput === passwordp) {
         //file upload to public drive
