@@ -8,6 +8,8 @@ const app = express();
 const port = 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ type: 'application/json' }))
+//use multer for file uploads
+const fs = require('fs');
 
 app.get('/', (req: any, res: any) => {
     res.sendFile(__dirname + '/index.html');
@@ -129,11 +131,49 @@ app.post('/edit/upload', (req: any, res: any) => {
     */
     const passwordInput = req.body.password;
     if (passwordInput === passwordp) {
-        // public drive editing
-        console.log("public drive editing");
-        
+        //file upload to public drive
+        console.log("file upload to public drive");
+        const name = req.body.name;
+        const path = req.body.path;
+        const files = req.files;
+        if (!name || !path || !files) {
+            res.status(400).send('Bad Request: Missing fields');
+            return;
+        }
+        // Here you would handle the file upload logic, e.g., saving files to the specified path
+        // heres the actual code:
+        const pathToSave = `files/${path}`;
+        if (!fs.exists) {
+            fs.mkdirSync(pathToSave, { recursive: true });
+        }
+        files.forEach((file: any) => {
+            const tempPath = file.path;
+            const targetPath = `${pathToSave}/${file.originalname}`;
+            fs.renameSync(tempPath, targetPath);
+        });
+
+        res.status(200);
     } else if (passwordInput === passwords) {
         // secret drive editing
+
+        const name = req.body.name;
+        const path = req.body.path;
+        const files = req.files;
+        if (!name || !path || !files) {
+            res.status(400).send('Bad Request: Missing fields');
+            return;
+        }
+        // Here you would handle the file upload logic, e.g., saving files to the specified path
+        const pathToSave = `secretfiles/${path}`;
+        if (!fs.exists) {
+            fs.mkdirSync(pathToSave, { recursive: true });
+        }
+        files.forEach((file: any) => {
+            const tempPath = file.path;
+            const targetPath = `${pathToSave}/${file.originalname}`;
+            fs.renameSync(tempPath, targetPath);
+        });
+        res.status(200);
         console.log("secret drive editing");
     } else {
         res.status(403).send('Forbidden');
