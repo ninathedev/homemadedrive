@@ -29,6 +29,99 @@ app.get('/edit/rename', (req: any, res: any) => {
     res.sendFile(__dirname + '/rename/index.html')
 });
 
+app.get('/api/gag/seed', (req: any, res: any) => {
+    // get request to api.joshlei.com/v2/growagarden/stock
+    /* 
+    example response:
+    {
+        "discord_invite": "string",
+        "seed_stock": [
+            {
+            "item_id": "string",
+            "display_name": "string",
+            "quantity": 0,
+            "start_date_unix": 0,
+            "end_date_unix": 0,
+            "Date_Start": "2025-07-04T14:12:49.694Z",
+            "Date_End": "2025-07-04T14:12:49.694Z",
+            "icon": "string"
+            }
+        ],
+        "gear_stock": [
+            {
+            "item_id": "string",
+            "display_name": "string",
+            "quantity": 0,
+            "start_date_unix": 0,
+            "end_date_unix": 0,
+            "Date_Start": "2025-07-04T14:12:49.694Z",
+            "Date_End": "2025-07-04T14:12:49.694Z",
+            "icon": "string"
+            }
+        ],
+        "egg_stock": [
+            {
+            "item_id": "string",
+            "display_name": "string",
+            "quantity": 0,
+            "start_date_unix": 0,
+            "end_date_unix": 0,
+            "Date_Start": "2025-07-04T14:12:49.694Z",
+            "Date_End": "2025-07-04T14:12:49.694Z",
+            "icon": "string"
+            }
+        ],
+        "cosmetic_stock": [
+            {
+            "item_id": "string",
+            "display_name": "string",
+            "quantity": 0,
+            "start_date_unix": 0,
+            "end_date_unix": 0,
+            "Date_Start": "2025-07-04T14:12:49.694Z",
+            "Date_End": "2025-07-04T14:12:49.694Z",
+            "icon": "string"
+            }
+        ],
+        "eventshop_stock": [
+            {
+            "item_id": "string",
+            "display_name": "string",
+            "quantity": 0,
+            "start_date_unix": 0,
+            "end_date_unix": 0,
+            "Date_Start": "2025-07-04T14:12:49.694Z",
+            "Date_End": "2025-07-04T14:12:49.694Z",
+            "icon": "string"
+            }
+        ],
+        "travelingmerchant_stock": [
+            {
+            "item_id": "string",
+            "display_name": "string",
+            "quantity": 0,
+            "start_date_unix": 0,
+            "end_date_unix": 0,
+            "Date_Start": "2025-07-04T14:12:49.694Z",
+            "Date_End": "2025-07-04T14:12:49.694Z",
+            "icon": "string"
+            }
+        ],
+        "notification": [
+            {
+            "message": "string",
+            "timestamp": 0,
+            "end_date_unix": 0
+            }
+        ]
+        }
+
+        only focus on the seed stock
+    */
+    
+    
+});
+
 app.post('/code', (req: any, res: any) => {
     const codeInput = req.headers.asks;
     console.log(codeInput)

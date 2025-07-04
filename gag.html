@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Item Table</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+        }
+        th, td {
+            border: 1px solid #888;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Cost</th>
+                <th>Rarity</th>
+            </tr>
+        </thead>
+        
+    </table>
+
+    <script>
+        function fetchAndRenderItems() {
+            fetch('/api/gagitems')
+                .then(response => response.json())
+                .then(items => {
+                    const table = document.querySelector('table');
+                    // Remove old rows except the header
+                    while (table.rows.length > 1) {
+                        table.deleteRow(1);
+                    }
+                    items.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td>${item.name}</td><td>${item.cost}</td><td>${item.rarity}</td>`;
+                        table.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching items:', error));
+        }
+
+        // Calculate ms until next 5-minute mark
+        function msUntilNext5Minute() {
+            const now = new Date();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const ms = now.getMilliseconds();
+            const next = (Math.floor(minutes / 5) + 1) * 5;
+            let deltaMinutes = next - minutes;
+            if (deltaMinutes <= 0) deltaMinutes += 60;
+            return deltaMinutes * 60 * 1000 - seconds * 1000 - ms;
+        }
+
+        function scheduleNextFetch() {
+            const ms = msUntilNext5Minute();
+            setTimeout(() => {
+                fetchAndRenderItems();
+                setInterval(fetchAndRenderItems, 5 * 60 * 1000);
+            }, ms);
+        }
+
+        fetchAndRenderItems();
+        scheduleNextFetch();
+    </script>
+</body>
+</html>
