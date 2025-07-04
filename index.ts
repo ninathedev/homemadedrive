@@ -29,97 +29,59 @@ app.get('/edit/rename', (req: any, res: any) => {
     res.sendFile(__dirname + '/rename/index.html')
 });
 
-app.get('/api/gag/seed', (req: any, res: any) => {
-    // get request to api.joshlei.com/v2/growagarden/stock
-    /* 
-    example response:
-    {
-        "discord_invite": "string",
-        "seed_stock": [
-            {
-            "item_id": "string",
-            "display_name": "string",
-            "quantity": 0,
-            "start_date_unix": 0,
-            "end_date_unix": 0,
-            "Date_Start": "2025-07-04T14:12:49.694Z",
-            "Date_End": "2025-07-04T14:12:49.694Z",
-            "icon": "string"
-            }
-        ],
-        "gear_stock": [
-            {
-            "item_id": "string",
-            "display_name": "string",
-            "quantity": 0,
-            "start_date_unix": 0,
-            "end_date_unix": 0,
-            "Date_Start": "2025-07-04T14:12:49.694Z",
-            "Date_End": "2025-07-04T14:12:49.694Z",
-            "icon": "string"
-            }
-        ],
-        "egg_stock": [
-            {
-            "item_id": "string",
-            "display_name": "string",
-            "quantity": 0,
-            "start_date_unix": 0,
-            "end_date_unix": 0,
-            "Date_Start": "2025-07-04T14:12:49.694Z",
-            "Date_End": "2025-07-04T14:12:49.694Z",
-            "icon": "string"
-            }
-        ],
-        "cosmetic_stock": [
-            {
-            "item_id": "string",
-            "display_name": "string",
-            "quantity": 0,
-            "start_date_unix": 0,
-            "end_date_unix": 0,
-            "Date_Start": "2025-07-04T14:12:49.694Z",
-            "Date_End": "2025-07-04T14:12:49.694Z",
-            "icon": "string"
-            }
-        ],
-        "eventshop_stock": [
-            {
-            "item_id": "string",
-            "display_name": "string",
-            "quantity": 0,
-            "start_date_unix": 0,
-            "end_date_unix": 0,
-            "Date_Start": "2025-07-04T14:12:49.694Z",
-            "Date_End": "2025-07-04T14:12:49.694Z",
-            "icon": "string"
-            }
-        ],
-        "travelingmerchant_stock": [
-            {
-            "item_id": "string",
-            "display_name": "string",
-            "quantity": 0,
-            "start_date_unix": 0,
-            "end_date_unix": 0,
-            "Date_Start": "2025-07-04T14:12:49.694Z",
-            "Date_End": "2025-07-04T14:12:49.694Z",
-            "icon": "string"
-            }
-        ],
-        "notification": [
-            {
-            "message": "string",
-            "timestamp": 0,
-            "end_date_unix": 0
-            }
-        ]
-        }
+app.get('/gag', (req: any, res: any) => {
+    res.sendFile(__dirname + '/gag.html');
+});
 
-        only focus on the seed stock
-    */
+app.get('/api/gag', (req: any, res: any) => {
+    // get request to api.joshlei.com/v2/growagarden/stock
     
-    
+    const url = 'https://api.joshlei.com/v2/growagarden/stock';
+    const https = require('https');
+
+    let result = {seed_stock: [], gear_stock: [], egg_stock: [], eventshop_stock: []};
+
+    https.get(url, (response: any) => {
+        let data = '';
+        response.on('data', (chunk: any) => {
+            data += chunk;
+        });
+        response.on('end', () => {
+            const json = JSON.parse(data);
+            const seedStock = json.seed_stock.map((item: any) => ({
+                item_id: item.item_id,
+                quantity: item.quantity
+            }));
+            result.seed_stock = seedStock;
+
+            //gear stock, its just the same thing
+            const gearStock = json.gear_stock.map((item: any) => ({
+                item_id: item.item_id,
+                quantity: item.quantity
+            }));
+            result.gear_stock = gearStock;
+
+            // egg stock, but dont include the amount
+            const eggStock = json.egg_stock.map((item: any) => ({
+                item_id: item.item_id
+            }));
+            result.egg_stock = eggStock;
+
+            // eventshop_stock
+            const eventShopStock = json.eventshop_stock.map((item: any) => ({
+                item_id: item.item_id,
+                quantity: item.quantity
+            }));
+            result.eventshop_stock = eventShopStock;
+
+            res.json(result);
+        });
+    }).on('error', (error: any) => {
+        console.error('Error fetching seed stock:', error);
+        res.status(500).send('Internal Server Error');
+    });
+
+
 });
 
 app.post('/code', (req: any, res: any) => {

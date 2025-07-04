@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Item Table</title>
+    <title>Item Tables</title>
     <style>
         table {
             border-collapse: collapse;
             width: 50%;
+            margin-bottom: 30px;
         }
         th, td {
             border: 1px solid #888;
@@ -19,58 +20,82 @@
     </style>
 </head>
 <body>
-    <table>
+    <h1>Live GAG Seed Stock</h1>
+    <table id="seed_stock">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Cost</th>
-                <th>Rarity</th>
+                <th>Amount</th>
             </tr>
         </thead>
-        
+    </table>
+
+    <h1>Live GAG Gear Stock</h1>
+    <table id="gear_stock">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+    </table>
+
+    <h1>Live GAG Egg Stock</h1>
+    <table id="egg_stock">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+    </table>
+
+    <h1>Live GAG Event Shop Stock</h1>
+    <table id="eventshop_stock">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
     </table>
 
     <script>
-        function fetchAndRenderItems() {
-            fetch('/api/gagitems')
+        function renderStock(tableId, items, key) {
+            const table = document.getElementById(tableId);
+            // Remove old rows except the header
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                if (tableId === 'egg_stock') {
+                    row.innerHTML = `
+                        <td>${item.item_id}</td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td>${item.item_id}</td>
+                        <td>${item.quantity}</td>
+                    `;
+                }
+                table.appendChild(row);
+            });
+        }
+
+        function fetchAndRenderAll() {
+            fetch('/api/gag')
                 .then(response => response.json())
-                .then(items => {
-                    const table = document.querySelector('table');
-                    // Remove old rows except the header
-                    while (table.rows.length > 1) {
-                        table.deleteRow(1);
-                    }
-                    items.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `<td>${item.name}</td><td>${item.cost}</td><td>${item.rarity}</td>`;
-                        table.appendChild(row);
-                    });
+                .then(data => {
+                    renderStock('seed_stock', data.seed_stock, 'seed_stock');
+                    renderStock('gear_stock', data.gear_stock, 'gear_stock');
+                    renderStock('egg_stock', data.egg_stock, 'egg_stock');
+                    renderStock('eventshop_stock', data.eventshop_stock, 'eventshop_stock');
                 })
-                .catch(error => console.error('Error fetching items:', error));
+                .catch(error => console.error('Error fetching gag stock:', error));
         }
 
-        // Calculate ms until next 5-minute mark
-        function msUntilNext5Minute() {
-            const now = new Date();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-            const ms = now.getMilliseconds();
-            const next = (Math.floor(minutes / 5) + 1) * 5;
-            let deltaMinutes = next - minutes;
-            if (deltaMinutes <= 0) deltaMinutes += 60;
-            return deltaMinutes * 60 * 1000 - seconds * 1000 - ms;
-        }
-
-        function scheduleNextFetch() {
-            const ms = msUntilNext5Minute();
-            setTimeout(() => {
-                fetchAndRenderItems();
-                setInterval(fetchAndRenderItems, 5 * 60 * 1000);
-            }, ms);
-        }
-
-        fetchAndRenderItems();
-        scheduleNextFetch();
+        fetchAndRenderAll();
+        setInterval(fetchAndRenderAll, 500);
     </script>
 </body>
 </html>
